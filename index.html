@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <title>Pokemon Battle Game</title>
+    <style>
+        body {
+            font-family: 'Press Start 2P', sans-serif;
+            height: 100vh;
+            background-image: url("/pokemon/image/pngtree-forest-tree-road-flower-background-picture-image_2383671.jpg");
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #game {
+            display: flex;
+            justify-content: space-between;
+            width: 80%;
+        }
+
+        .pokemon {
+            transition: transform 0.3s ease;
+        }
+
+        .pokemon img {
+            width: 400px;
+            height: 400px;
+        }
+
+        .attack {
+            transform: translateX(50px);
+        }
+
+        .reverse-attack {
+            transform: translateX(-50px);
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #f9f7d6;
+            border: 7px solid #1f3608;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        button img {
+            transform: scale(1.3);
+        }
+
+        #claw-effect {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            background: url('https://www.freeiconspng.com/thumbs/claw-scratch/red-claw-scratch-photo-4.png') no-repeat center center / contain;
+            pointer-events: none;
+            display: none;
+        }
+
+        .claw-animation {
+            animation: claw 0.5s forwards;
+        }
+
+        @keyframes claw {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateY(-50px) scale(1);
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1.5);
+            }
+        }
+
+        .skill-list {
+            list-style-type: none;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+
+        .skill-list li {
+            color: #fff;
+    border: 3px double #fff;
+    background-color: #1f3608;
+    padding: 5px;
+    margin: 5px 0;
+    border-radius: 5px;
+    box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    width: 70px;
+    height: 70px;
+    font-size: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    flex-direction: column;
+    gap: 0.7rem;
+        }
+
+        #popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: none;
+            line-height: 2.5;
+        }
+
+        #popup button {
+            margin-top: 10px;
+        }
+
+        .box_skill {
+            width: 400px;
+            background-color: #f9f7d6;
+            border: 7px solid #1f3608;
+            padding: 0px 20px;
+            position: relative;
+        }
+
+        #pokemon1 .box_skill {
+            border-radius: 40px 0px 40px 0px;
+        }
+
+        #pokemon2 .box_skill {
+            border-radius: 0 40px 0 40px;
+        }
+
+        #pokemon1 .box_skill::after {
+            content: "";
+            position: absolute;
+            bottom: -1.5rem;
+            right: -1rem;
+            display: block;
+            width: 500px;
+            height: 50px;
+            background-color: #4d655e;
+            z-index: -1;
+            clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
+            border-radius: 0 0 2rem 0;
+            border: 3px solid #fab37b;
+        }
+
+        #pokemon2 .box_skill::after {
+            content: "";
+            position: absolute;
+            bottom: -1.5rem;
+            left: -1rem;
+            display: block;
+            width: 500px;
+            height: 50px;
+            background-color: #4d655e;
+            z-index: -1;
+            clip-path: polygon(0 0, 85% 0, 100% 100%, 0% 100%);
+            border-radius: 0 0 0 2rem;
+            border: 3px solid #fab37b;
+        }
+
+        .inner_name {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .inner_name h2,
+        .inner_name p {
+            font-size: 18px !important;
+            text-transform: uppercase;
+        }
+
+        .box_skill .progress-container-main {
+            display: flex;
+            width: 100%;
+            justify-content: flex-end;
+        }
+
+        .box_skill .progress-container-main .inner {
+            display: flex;
+            background-color: #506352;
+            align-items: center;
+            border-radius: 50px;
+            padding: 0 0.2rem 0 0.7rem;
+            width: 300px;
+            color: #fab37b;
+        }
+
+        .progress-container {
+            width: 100%;
+            background-color: #506352;
+            border-radius: 50px;
+            border: 3px solid #fff;
+            margin: 5px 0;
+            position: relative;
+            height: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-image: linear-gradient(#c9a706, #f3d941);
+            width: 100%;
+            border-radius: 10px;
+            transition: width 0.2s ease;
+        }
+
+        #pokemon1 {
+            position: absolute;
+            bottom: 0;
+            left: 10rem;
+        }
+
+        #pokemon2 {
+            position: absolute;
+            top: 5rem;
+            right: 10rem;
+        }
+
+        #pokemon1-attack {
+            position: absolute;
+            bottom: 2rem;
+        }
+        #pokemon2-skills::after {
+            content: "";
+            background: transparent;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #pokemon1::after, #pokemon2::after {
+            content: "";
+            display: block;
+            width: 400px;
+            height: 80px;
+            background: #2d8c53;
+            border: 18px solid #e3da8d;
+            position: absolute;
+            border-radius: 50%;
+            bottom: 2.4rem;
+            left: -2rem;
+            z-index: -1;
+            box-shadow: 7px 20px 20px 11px #56e3669c;
+        }
+        @media only screen and (max-width: 600px) {
+#pokemon1 {
+      transform: scale(0.4);
+    left: -7rem;
+}
+            #pokemon2 {
+  transform: scale(0.4);
+    right: -7rem;
+}
+}
+    </style>
+</head>
+<div style="display: flex;align-items: center;">
+    <img src="/pokemon/image/speaker-98507_1280.webp" width="70" alt="">
+    <audio id="background-music" src="/pokemon/image/1-15. Battle (Vs. Trainer).mp3" autoplay loop></audio>
+    
+    <button id="play-button">Phát nhạc</button>
+
+    <input type="range" id="volume-control" min="0" max="1" step="0.01" value="1">
+
+</div>
+
+
+<script>
+          document.addEventListener("DOMContentLoaded", function() {
+            var audio = document.getElementById("background-music");
+            var playButton = document.getElementById("play-button");
+            var volumeControl = document.getElementById("volume-control");
+
+            playButton.addEventListener("click", function() {
+                audio.play().catch(function(error) {
+                    console.log("Phát nhạc bị chặn bởi trình duyệt:", error);
+                });
+            });
+
+            volumeControl.addEventListener("input", function() {
+                audio.volume = this.value;
+            });
+        });
+
+</script>
+<body>
+    <div id="game">
+        <div id="pokemon1" class="pokemon">
+            <div class="box_skill">
+                <div class="inner_name">
+                    <h2 id="pokemon1-name">Loading...</h2>
+                    <div class="level" id="pokemon1-level">Lv 1</div>
+                </div>
+                <div class="progress-container-main">
+                    <div class="inner">
+                        HP
+                        <div class="progress-container">
+                            <div id="pokemon1-hp" class="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <ul id="pokemon1-skills" class="skill-list"></ul>
+            </div>
+
+            <img id="pokemon1-img" src="" alt="Pokemon 1">
+            <button id="pokemon1-attack" onclick="attack('pokemon1', 10)">
+                <img style="width: 70px;height: 70px"
+                    src="/pokemon/image/pngtree-claw-clipart-orange-claws-with-claws-on-white-background-cartoon-vector-png-image_11075271.png"
+                    alt="">
+            </button>
+        </div>
+        <div id="pokemon2" class="pokemon">
+            <div class="box_skill">
+                <div class="inner_name">
+                    <h2 id="pokemon2-name">Loading...</h2>
+                    <div class="level" id="pokemon2-level">Lv 1</div>
+                </div>
+                <div class="progress-container-main">
+                    <div class="inner">
+                        HP
+                        <div class="progress-container">
+                            <div id="pokemon2-hp" class="progress-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                <ul id="pokemon2-skills" class="skill-list"></ul>
+            </div>
+            <img id="pokemon2-img" src="" alt="Pokemon 2">
+        </div>
+    </div>
+    <div id="claw-effect"></div>
+    <div id="popup"
+        style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 10px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+        <p>Congratulations! Your Pokémon has leveled up!</p>
+        <button onclick="closePopup()">Close</button>
+    </div>
+
+
+    <script>
+        let pokemon1 = {};
+        let pokemon2 = {};
+        let isPokemon2Attacking = false;
+        let isPokemon1Turn = true; // Biến trạng thái để theo dõi lượt tấn công
+
+        async function fetchMoveDetails(url) {
+            const response = await fetch(url);
+            const data = await response.json();
+            return data.power;
+        }
+
+        function updateProgressBar(elementPrefix, currentHp, maxHp) {
+            const progressBar = document.getElementById(`${elementPrefix}-hp`);
+            const percentage = (currentHp / maxHp) * 100;
+            progressBar.style.width = percentage + '%';
+        }
+
+        async function fetchPokemon(pokemonId, elementPrefix) {
+            const response = await fetch(`https://pokeapi.co/api/v2/pokemon/${pokemonId}`);
+            const data = await response.json();
+            console.log(data);
+
+            // Chỉ lấy 5 kỹ năng đầu tiên và kiểm tra kỹ năng có power không null
+            const limitedMoves = data.moves.slice(0, 50); // Lấy tối đa 50 moves trước khi lọc
+            const skills = await Promise.all(limitedMoves.map(async move => {
+                const power = await fetchMoveDetails(move.move.url);
+                if (power !== null) {
+                    return {
+                        name: move.move.name,
+                        power: power,
+                        url: move.move.url
+                    };
+                }
+            }));
+
+            const validSkills = skills.filter(skill => skill !== undefined).slice(0, 5); // Giới hạn 5 kỹ năng
+            validSkills.sort((a, b) => a.power - b.power || a.name.localeCompare(b.name));
+
+            console.log(`Skills for ${elementPrefix}:`, validSkills);
+
+            const baseHp = data.stats.find(stat => stat.stat.name === 'hp').base_stat;
+            const maxHp = baseHp + 600; // Giá trị HP tối đa
+            const pokemon = {
+                name: data.name,
+                hp: baseHp + 600,
+                maxHp: maxHp,
+                img_back: data.sprites.back_default,
+                img_front: data.sprites.front_default,
+                skills: validSkills,
+                level: 1,
+                exp: 0,
+                attackPower: 10, // Default attack power
+                activeSkills: [], // Active skills to be displayed
+                maxLevelReached: false // New attribute to track if max level is reached
+            };
+
+            document.getElementById(`${elementPrefix}-name`).innerText = pokemon.name;
+            updateProgressBar(elementPrefix, pokemon.hp, baseHp);
+            if (elementPrefix === 'pokemon1') {
+                document.getElementById(`${elementPrefix}-img`).src = pokemon.img_back;
+            } else {
+                document.getElementById(`${elementPrefix}-img`).src = pokemon.img_front;
+            }
+
+            renderSkills(elementPrefix, pokemon.activeSkills);
+
+            return pokemon;
+        }
+
+        async function initGame() {
+            pokemon1 = await fetchPokemon(25, 'pokemon1'); // Pikachu
+            pokemon2 = await fetchPokemon(4, 'pokemon2');  // Charmander
+
+            // Cập nhật thanh tiến trình cho cả hai Pokémon
+            updateProgressBar('pokemon1', pokemon1.hp, pokemon1.maxHp);
+            updateProgressBar('pokemon2', pokemon2.hp, pokemon2.maxHp);
+
+            isPokemon1Turn = true; // Bắt đầu với lượt của Pokémon1
+        }
+
+
+
+        function attack(attacker, power = 10) {
+            if ((attacker === 'pokemon1' && !isPokemon1Turn) || (attacker === 'pokemon2' && isPokemon1Turn)) {
+                return; // Không cho phép tấn công nếu không đúng lượt
+            }
+
+            const defender = attacker === 'pokemon1' ? 'pokemon2' : 'pokemon1';
+            const attackingPokemon = attacker === 'pokemon1' ? pokemon1 : pokemon2;
+            const defendingPokemon = attacker === 'pokemon1' ? pokemon2 : pokemon1;
+
+            let skillName = '';
+
+            if (attacker === 'pokemon2' && pokemon2.level > 1 && pokemon2.activeSkills.length > 0) {
+                const randomSkill = pokemon2.activeSkills[Math.floor(Math.random() * pokemon2.activeSkills.length)];
+                power = randomSkill.power;
+                skillName = randomSkill.name;
+            }
+
+            // Ensure power is not NaN
+            if (isNaN(power)) power = 10;
+
+            animateAttack(attacker, defender);
+            setTimeout(() => {
+                defendingPokemon.hp -= power;
+                // Ensure HP is not NaN
+                if (isNaN(defendingPokemon.hp)) defendingPokemon.hp = 0;
+                updateProgressBar(defender, defendingPokemon.hp, defendingPokemon.maxHp);
+
+                if (defendingPokemon.hp <= 0) {
+                    alert(attackingPokemon.name + ' wins!');
+                    resetGame();
+                } else {
+                    if (attacker === 'pokemon1') {
+                        pokemon1.exp += power;
+                        if (pokemon1.exp >= 60) { // Change to 20 for testing
+                            levelUp('pokemon1');
+                        }
+                        // Chuyển lượt sang Pokémon2
+                        isPokemon1Turn = false;
+                        if (!isPokemon2Attacking) {
+                            isPokemon2Attacking = true;
+                            setTimeout(() => {
+                                if (defendingPokemon.hp > 0) { // Only attack if still in battle
+                                    attack('pokemon2', pokemon2.attackPower); // Auto counter-attack with fixed power
+                                    if (skillName) {
+                                        highlightSkill('pokemon2', skillName); // Highlight skill used
+                                    }
+                                    pokemon2.exp += 10; // Chỉ thêm 10 điểm kinh nghiệm cho mỗi lượt tấn công
+                                    if (pokemon2.exp >= 60) { // Kiểm tra nếu điểm kinh nghiệm đạt 20
+                                        levelUp('pokemon2');
+                                    }
+                                }
+                                isPokemon2Attacking = false; // Reset flag after Pokémon2 attacks
+                                // Chuyển lượt lại cho Pokémon1
+                                isPokemon1Turn = true;
+                            }, 3000); // 3 second delay
+                        }
+                    } else if (attacker === 'pokemon2') {
+                        isPokemon2Attacking = false; // Reset flag after Pokémon2 attacks
+                        if (skillName) {
+                            highlightSkill('pokemon2', skillName); // Highlight skill used
+                        }
+                    }
+                }
+            }, 300); // Delay to match animation
+        }
+
+
+
+
+        function highlightSkill(pokemonId, skillName) {
+            const skillsList = document.getElementById(`${pokemonId}-skills`).children;
+            for (let i = 0; i < skillsList.length; i++) {
+                if (skillsList[i].innerText.includes(skillName)) {
+                    skillsList[i].style.backgroundColor = 'red';
+                } else {
+                    skillsList[i].style.backgroundColor = ''; // Reset background color for other skills
+                }
+            }
+        }
+
+
+
+        function animateAttack(attacker, defender) {
+            const attackerElement = document.getElementById(attacker);
+            const defenderElement = document.getElementById(defender);
+            const clawEffect = document.getElementById('claw-effect');
+
+            const attackerRect = attackerElement.getBoundingClientRect();
+            const defenderRect = defenderElement.getBoundingClientRect();
+
+            const clawX = (attacker === 'pokemon1') ? defenderRect.left : defenderRect.right - 100;
+            const clawY = defenderRect.top + defenderRect.height / 2 - 50;
+
+            clawEffect.style.left = clawX + 'px';
+            clawEffect.style.top = clawY + 'px';
+            clawEffect.style.display = 'block';
+            clawEffect.classList.add('claw-animation');
+
+            setTimeout(() => {
+                clawEffect.style.display = 'none';
+                clawEffect.classList.remove('claw-animation');
+            }, 500);
+
+            attackerElement.classList.add(attacker === 'pokemon1' ? 'attack' : 'reverse-attack');
+            setTimeout(() => {
+                attackerElement.classList.remove(attacker === 'pokemon1' ? 'attack' : 'reverse-attack');
+            }, 300);
+        }
+
+        function levelUp(pokemonId) {
+            const pokemon = pokemonId === 'pokemon1' ? pokemon1 : pokemon2;
+            pokemon.level++;
+            pokemon.exp = 0; // Đặt lại điểm kinh nghiệm sau khi lên cấp
+            pokemon.attackPower = 10 * pokemon.level; // Tăng sức tấn công dựa trên cấp độ
+            document.getElementById(`${pokemonId}-level`).innerText = 'Level ' + pokemon.level;
+
+            // Thêm kỹ năng mới dựa trên cấp độ
+            const newSkill = pokemon.skills[pokemon.activeSkills.length]; // Lấy kỹ năng tiếp theo
+            if (newSkill) {
+                pokemon.activeSkills.push(newSkill);
+                renderSkills(pokemonId, pokemon.activeSkills); // Cập nhật danh sách kỹ năng
+                showPopup(`Congratulations! ${pokemon.name} has leveled up to level ${pokemon.level}!`);
+            } else if (!pokemon.hasShownMaxLevelMessage) { // Chỉ hiển thị thông báo cấp độ tối đa một lần
+                showPopup(`Pokemon '${pokemon.name}' level max`);
+                pokemon.hasShownMaxLevelMessage = true; // Đánh dấu rằng thông báo cấp độ tối đa đã được hiển thị
+            }
+        }
+
+
+
+        function showPopup(message) {
+            const popup = document.getElementById('popup');
+            popup.querySelector('p').innerText = message;
+            popup.style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('popup').style.display = 'none';
+        }
+
+        function resetGame() {
+            isPokemon1Turn = true; // Đặt lại biến trạng thái khi reset game
+            initGame();
+        }
+
+        function renderSkills(elementPrefix, skills) {
+            const skillsList = document.getElementById(`${elementPrefix}-skills`);
+            skillsList.innerHTML = '';
+            skills.forEach(skill => {
+                const li = document.createElement('li');
+                li.innerHTML = `<div>${skill.name}</div> <div>${skill.power}</div>`;
+                li.onclick = () => attack(elementPrefix, skill.power);
+                skillsList.appendChild(li);
+            });
+        }
+
+        // Initialize the game
+        initGame();
+
+    </script>
+</body>
+
+</html>
