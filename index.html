@@ -262,6 +262,11 @@
             z-index: -1;
             box-shadow: 7px 20px 20px 11px #56e3669c;
         }
+        .sound {
+            position: fixed;
+    top: 0;
+    left: 0;
+        }
         @media only screen and (max-width: 600px) {
 #pokemon1 {
       transform: scale(0.4);
@@ -276,7 +281,8 @@
 }
     </style>
 </head>
-<div style="display: flex;align-items: center;">
+    <div class="sound">
+        <div style="display: flex;align-items: center;">
     <img src="/pokemon/image/speaker-98507_1280.webp" width="70" alt="">
     <audio id="background-music" src="/pokemon/image/1-15. Battle (Vs. Trainer).mp3" autoplay loop></audio>
     
@@ -285,6 +291,8 @@
     <input type="range" id="volume-control" min="0" max="1" step="0.01" value="1">
 
 </div>
+    </div>
+
 
 
 <script>
